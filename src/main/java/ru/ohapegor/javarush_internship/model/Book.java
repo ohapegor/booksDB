@@ -105,4 +105,32 @@ public class Book {
                 ", readAlready=" + readAlready +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Book)) return false;
+
+        Book book = (Book) o;
+
+        if (id != book.id) return false;
+        if (printYear != book.printYear) return false;
+        if (readAlready != book.readAlready) return false;
+        if (title != null ? !title.equals(book.title) : book.title != null) return false;
+        if (description != null ? !description.equals(book.description) : book.description != null) return false;
+        if (author != null ? !author.equals(book.author) : book.author != null) return false;
+        return isbn != null ? isbn.equals(book.isbn) : book.isbn == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (isbn != null ? isbn.hashCode() : 0);
+        result = 31 * result + printYear;
+        result = 31 * result + (readAlready ? 1 : 0);
+        return result;
+    }
 }

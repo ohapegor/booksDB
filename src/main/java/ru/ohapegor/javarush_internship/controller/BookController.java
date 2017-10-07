@@ -19,7 +19,7 @@ public class BookController {
     private BookService bookService;
 
     private static final int MAX_ROWS_PER_PAGE = 10;
-    
+
     @Autowired(required = true)
     @Qualifier(value = "bookService")
     public void setBookService(BookService bookService) {
@@ -33,7 +33,7 @@ public class BookController {
         ModelAndView modelAndView = new ModelAndView("bookList");
         //Setting book by id for edit area
         Book book;
-        if (id == null) book = new Book();
+        if (id == null || id == 0) book = new Book();
         else book = this.bookService.getBookById(id);
         if (book == null) book = new Book();
         modelAndView.addObject("book", book);
@@ -62,22 +62,36 @@ public class BookController {
 
     @RequestMapping("deleteBook")
     public String deleteBook(@RequestParam int id,
-                             @RequestParam(required = false) Integer page) {
+                             @RequestParam(required = false) Integer page,
+                             @RequestParam(required = false) String searchTitle) {
         this.bookService.removeBookById(id);
-        return "redirect:/" + "?page=" + page;
+        return "redirect:/" + "?page=" + page+ "&searchTitle=" + searchTitle;
+    }
+
+    @RequestMapping("readBook")
+    public String readBook(@RequestParam int id,
+                           @RequestParam(required = false) Integer page,
+                           @RequestParam(required = false) String searchTitle) {
+        Book book = this.bookService.getBookById(id);
+        book.setReadAlready(true);
+        this.bookService.updateBook(book);
+        return "redirect:/" + "?page=" + page+ "&searchTitle=" + searchTitle;
     }
 
     @RequestMapping("addBook")
     public String addBook(@ModelAttribute("book") Book book,
                           @RequestParam(required = false) Integer page,
                           @RequestParam(required = false) String searchTitle) {
-        System.out.println(">>>book = " + book);
         if (book.getId() == 0) {
             this.bookService.addBook(book);
         } else {
-            this.bookService.updateBook(book);
+            Book storedBook = this.bookService.getBookById(book.getId());
+            if (!storedBook.equals(book)) {
+                book.setReadAlready(false);
+                this.bookService.updateBook(book);
+            }
         }
-        return "redirect:/?page=" + page+"&searchTitle=" + searchTitle;
+        return "redirect:/?page=" + page + "&searchTitle=" + searchTitle;
     }
 
 
@@ -85,7 +99,7 @@ public class BookController {
     public String editBook(@RequestParam Integer id,
                            @RequestParam(required = false) Integer page,
                            @RequestParam(required = false) String searchTitle) {
-        return "redirect:/?page=" + page + "&id=" + id+ "&searchTitle=" + searchTitle;
+        return "redirect:/?page=" + page + "&id=" + id + "&searchTitle=" + searchTitle;
     }
 
 

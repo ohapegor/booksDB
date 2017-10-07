@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="from" uri="http://www.springframework.org/tags/form" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <html>
 <head>
     <title>Books Database</title>
@@ -70,7 +70,7 @@
 
 </head>
 <body class=".container-fluid" style="background-color:whitesmoke">
-<div align="center" class="container myrow-container">
+<div class="container myrow-container">
     <div class="panel">
         <div class="panel-heading" style="background-color:#786455">
             <h1 align="center" class="panel-title" style="color: coral">Welcome to my Books Database (Author - Egor
@@ -82,6 +82,7 @@
             <c:url value="/" var="search">
                 <c:param name="id" value="${book.id}"/>
                 <c:param name="page" value="${page }"/>
+                <c:param name="searchTitle" value="${searchTitle}"/>
             </c:url>
             <form action="${search}">
                 <div class="row">
@@ -96,55 +97,69 @@
 
             <c:if test="${!empty bookList}">
 
-            <table class="table table-hover table-bordered">
-                <thead style="background-color: #b39b89;">
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Author</th>
-                    <th>ISBN</th>
-                    <th>Print Year</th>
-                    <th>Read Already?</th>
-                    <th>Read Book</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach items="${bookList}" var="book">
-                <tr>
-                    <td><c:out value="${book.id}"/></td>
-                    <td><c:out value="${book.title}"/></td>
-                    <td><c:out value="${book.description}"/></td>
-                    <td><c:out value="${book.author}"/></td>
-                    <td><c:out value="${book.isbn}"/></td>
-                    <td><c:out value="${book.printYear}"/></td>
-                    <td><c:out value="${book.readAlready}"/></td>
-                    <td>Click if read already</td>
-
-
-                    <c:url value="editBook" var="editBook">
-                        <c:param name="id" value="${book.id}"/>
-                        <c:param name="page" value="${page}"/>
-                        <c:param name="searchTitle" value="${searchTitle}"/>
-                    </c:url>
-
-                    <td><a class="aEdit" href="<c:out value="${editBook}" />">Edit</a></td>
 
 
 
-                    <c:url value="deleteBook" var="deleteBook">
-                        <c:param name="id" value="${book.id}"/>
-                        <c:param name="page" value="${page}"/>
-                        <c:param name="searchTitle" value="${searchTitle}"/>
-                    </c:url>
-                    <td><a class="aDelete" href="<c:out value="${deleteBook}" />" onclick="return confirmDelete();">Delete</a>
-                    </td>
-                </tr>
-                </tbody>
-                </c:forEach>
-            </table>
+                <table class="table table-hover table-bordered">
+                    <thead style="background-color: #b39b89;">
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Print Year</th>
+                        <th>Read Already?</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${bookList}" var="nextBook">
+                    <tr>
+                        <td><c:out value="${nextBook.id}"/></td>
+                        <td><c:out value="${nextBook.title}"/></td>
+                        <td><c:out value="${nextBook.description}"/></td>
+                        <td><c:out value="${nextBook.author}"/></td>
+                        <td><c:out value="${nextBook.isbn}"/></td>
+                        <td><c:out value="${nextBook.printYear}"/></td>
+                        <c:url value="readBook" var="readBook">
+                            <c:param name="id" value="${nextBook.id}"/>
+                            <c:param name="page" value="${page}"/>
+                            <c:param name="searchTitle" value="${searchTitle}"/>
+                        </c:url>
+                        <td><c:out value="${nextBook.readAlready}"/>
+                            <c:if test="${!nextBook.readAlready}">
+                                <form:form id="BooksTable" cssClass="form-horizontal" action="${readBook}">
+                                    <input type="submit" class="btn" value="Read"/>
+                                </form:form>
+                            </c:if>
+                        </td>
+
+
+
+                        <c:url value="editBook" var="editBook">
+                            <c:param name="id" value="${nextBook.id}"/>
+                            <c:param name="page" value="${page}"/>
+                            <c:param name="searchTitle" value="${searchTitle}"/>
+                        </c:url>
+
+
+                        <td><a class="aEdit" href="<c:out value="${editBook}" />">Edit</a></td>
+
+
+                        <c:url value="deleteBook" var="deleteBook">
+                            <c:param name="id" value="${nextBook.id}"/>
+                            <c:param name="page" value="${page}"/>
+                            <c:param name="searchTitle" value="${searchTitle}"/>
+                        </c:url>
+                        <td><a class="aDelete" href="<c:out value="${deleteBook}" />" onclick="return confirmDelete();">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                    </c:forEach>
+                </table>
+
         </div>
         <div align="center" class="panel-footer" style="background-color:#786455" id="pagination">
             </c:if>
@@ -188,6 +203,7 @@
             </p>
         </div>
 
+
         <%--Add / Edit book area--%>
         <c:url value="addBook" var="addBook">
             <c:param name="page" value="${page}"/>
@@ -195,6 +211,8 @@
         </c:url>
         <div class="panel-body">
             <form:form id="BookRegisterForm" cssClass="form-horizontal" action="${addBook}" modelAttribute="book">
+                <c:if test="${!empty book.title}"><h1 align="center">Enter new edition information</h1></c:if>
+                <c:if test="${empty book.title}"><h1 align="center">Enter new book information</h1></c:if>
                 <div class="form-group">
                     <div class="control-label col-xs-3"><form:label path="title">Title</form:label></div>
                     <div class="col-xs-6">
@@ -212,9 +230,18 @@
 
                 <div class="form-group">
                     <form:label path="author" cssClass="control-label col-xs-3">Author</form:label>
+                    <c:if test="${empty book.title}">
                     <div class="col-xs-6">
                         <form:input cssClass="form-control" path="author"/>
                     </div>
+                    </c:if>
+
+                    <c:if test="${!empty book.title}">
+                        <form:hidden path="author" value="${book.author}"/>
+                    <div class="col-xs-6">
+                        <input class="form-control" value="${book.author}" disabled="true">
+                    </div>
+                    </c:if>
                 </div>
 
                 <div class="form-group">
@@ -233,11 +260,8 @@
 
 
 
-                <div class="form-group">
-                    <div class="control-label col-xs-3"><form:label path="readAlready">readAlready?</form:label></div>
-                    <div class="col-xs-6">
-                        <form:input cssClass="form-control" path="readAlready"/>
-                    </div>
+                        <form:hidden path="readAlready" value="${book.readAlready}"/>
+
                 </div>
 
                 <div class="form-group">
@@ -303,6 +327,11 @@
             $('#printYear').focus();
             return false;
         }
+
+
+            var n = parse(readAlready);
+            if (isNaN(n)) {alert('не число');}
+
 
         if (readAlready < 0 || readAlready > 1) {
             alert('Please enter proper isReadAlready');
