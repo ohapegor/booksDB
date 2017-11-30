@@ -9,6 +9,7 @@ import ru.ohapegor.javarush_internship.model.Book;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class BookServiceImpl implements BookService {
 
     private BookDAO bookDAO;
@@ -17,13 +18,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public Book getBookById(int id) {
         return this.bookDAO.getBookById(id);
     }
 
     @Override
-    @Transactional
     public List<Book> getAllBooks() {
         return this.bookDAO.getAllBooks();
     }
@@ -41,7 +40,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public List<Book> findBooksByTitle(String title) {
         return this.bookDAO.findBooksByTitle(title);
     }
